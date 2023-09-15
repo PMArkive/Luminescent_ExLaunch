@@ -30,4 +30,8 @@ namespace Pml::PokePara {
             external<void>(0x020521d0, this);
         }
     };
+
+    static Il2CppClass* InitialSpec_TypeInfo() {
+        return *reinterpret_cast<Il2CppClass**>(exl::util::modules::GetTargetOffset(0x04c5e700));
+    }
 }

@@ -282,4 +282,8 @@ struct PlayerWork : ILClass<PlayerWork, 0x04c59b58> {
     static inline bool get_playerSex() {
         return external<bool>(0x02ce2cd0);
     }
+
+    static inline int32_t get_msgLangID() {
+        return external<int32_t>(0x02ce2c20);
+    }
 };

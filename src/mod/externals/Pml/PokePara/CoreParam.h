@@ -5,6 +5,7 @@
 #include "externals/Pml/PokePara/Accessor.h"
 #include "externals/Pml/PokePara/EggCheckType.h"
 #include "externals/Pml/WazaNo.h"
+#include "externals/Pml/PokePara/OwnerInfo.h"
 
 namespace Pml::PokePara {
     struct CoreParam : ILClass<CoreParam> {
@@ -176,6 +177,30 @@ namespace Pml::PokePara {
 
         inline void RemoveItem() {
             external<void>(0x02049690, this);
+        }
+
+        inline void SetParentName(System::String::Object* name) {
+            external<void>(0x0204ac00, this, name);
+        }
+
+        inline void SetLangId(uint32_t id) {
+            external<void>(0x02049650, this, id);
+        }
+
+        inline void SetCondition(int32_t cond, uint8_t value) {
+            external<void>(0x0204b040, this, cond, value);
+        }
+
+        inline bool UpdateOwnerInfo(Pml::PokePara::OwnerInfo::Object* ownerInfo) {
+            external<bool>(0x02048c90, this, ownerInfo);
+        }
+
+        inline bool StartFastMode() {
+            external<bool>(0x0204c910, this);
+        }
+
+        inline bool EndFastMode(bool validFlag) {
+            external<bool>(0x0204c960, this, validFlag);
         }
     };
 }

@@ -3,6 +3,7 @@
 #include "externals/il2cpp-api.h"
 #include "externals/XLSXContent/CharacterDressData.h"
 #include "externals/XLSXContent/ShopTable.h"
+#include "externals/XLSXContent/LocalKoukanData.h"
 
 namespace GameData {
     struct DataManager : ILClass<DataManager, 0x04c59d70> {
@@ -30,7 +31,7 @@ namespace GameData {
             void* AdventureNoteDataDict; //System::Collections::Generic::Dictionary$$int$$List_AdventureNoteData_SheetData::Object*
             void* TowerBattlePoint;
             void* TagPlaceData;
-            void* LocalKoukanData;
+            XLSXContent::LocalKoukanData::Object* LocalKoukanData;
             void* ContestCommonData;
             void* TvDataTable;
             void* TvSchedule;
@@ -52,4 +53,8 @@ namespace GameData {
             return external<XLSXContent::CharacterDressData::SheetData::Object *>(0x02ccd460, dressId);
         }
     };
+
+    static Il2CppClass* DataManager_TypeInfo() {
+        return *reinterpret_cast<Il2CppClass**>(exl::util::modules::GetTargetOffset(0x04c59d70));
+    }
 }
