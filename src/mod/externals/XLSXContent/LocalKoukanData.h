@@ -26,11 +26,11 @@ namespace XLSXContent {
         };
 
         struct Fields : UnityEngine::ScriptableObject::Fields {
-            struct XLSXContent::LocalKoukanData::Sheetdata::Array* data;
+            XLSXContent::LocalKoukanData::Sheetdata::Array* data;
         };
 
-        static inline XLSXContent::LocalKoukanData::Sheetdata::Object * get_Item(int32_t index) {
-            return external<XLSXContent::LocalKoukanData::Sheetdata::Object *>(0x017d5670, index);
+        inline XLSXContent::LocalKoukanData::Sheetdata::Object * get_Item(int32_t index) {
+            return external<XLSXContent::LocalKoukanData::Sheetdata::Object *>(0x017d5670, this, index);
         }
     };
 }

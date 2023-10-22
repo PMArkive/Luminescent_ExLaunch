@@ -8,7 +8,6 @@
 namespace Pml::PokePara {
     struct PokemonParam : ILClass<PokemonParam, 0x04c59c10> {
         struct Fields : public CoreParam::Fields {
-            //TODO
         };
 
         inline void ctor(int32_t monsno, uint16_t level, uint64_t id) {
@@ -19,8 +18,4 @@ namespace Pml::PokePara {
             external<void>(0x02055140, this, spec);
         }
     };
-
-    static Il2CppClass* PokemonParam_TypeInfo() {
-        return *reinterpret_cast<Il2CppClass**>(exl::util::modules::GetTargetOffset(0x04c59c100));
-    }
 }

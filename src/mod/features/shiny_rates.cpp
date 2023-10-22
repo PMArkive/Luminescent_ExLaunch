@@ -8,9 +8,12 @@
 #include "externals/Pml/Local/RandomGenerator.h"
 #include "externals/Pml/PokePara/CalcTool.h"
 #include "externals/Pml/PokePara/InitialSpec.h"
+#include "logger/logger.h"
 
 uint32_t ShinyRolls(Pml::PokePara::InitialSpec::Object* pFixSpec, Pml::Local::RandomGenerator::Object* rng)
 {
+    Logger::log("Shiny rolls start\n");
+    Logger::log("pFixSpec : %08X\n", pFixSpec);
     uint32_t rareTryCount = pFixSpec->fields.rareTryCount;
     uint32_t rareRnd = 0;
     uint32_t id = pFixSpec->fields.id;
@@ -20,6 +23,8 @@ uint32_t ShinyRolls(Pml::PokePara::InitialSpec::Object* pFixSpec, Pml::Local::Ra
 
     // Shiny charm rolls
     Dpr::Item::ItemInfo::Object* item = ItemWork::GetItemInfo(array_index(ITEMS, "Shiny Charm"));
+    Logger::log("item : %08X\n", item);
+
     if (item != nullptr && item->get_count() > 0)
     {
         rareTryCount += 2;
@@ -27,11 +32,21 @@ uint32_t ShinyRolls(Pml::PokePara::InitialSpec::Object* pFixSpec, Pml::Local::Ra
 
     for (uint32_t i=0; i<rareTryCount; i++)
     {
-        if (rng == nullptr) rareRnd = Pml::Local::Random::GetValue();
-        else rareRnd = rng->GetRand();
+        if (rng == nullptr)
+        {
+            Logger::log("rng is null : %08X\n", rng);
+            rareRnd = Pml::Local::Random::GetValue();
+        }
+        else
+        {
+            Logger::log("rng isn't null : %08X\n", rng);
+            rareRnd = rng->GetRand();
+        }
 
+        Logger::log("Trying shiny roll\n");
         if (Pml::PokePara::CalcTool::IsRareColor(id, rareRnd))
         {
+            Logger::log("breaking shiny roll loop\n");
             break;
         }
     }
@@ -39,6 +54,7 @@ uint32_t ShinyRolls(Pml::PokePara::InitialSpec::Object* pFixSpec, Pml::Local::Ra
     // Make sure that we don't keep looping
     pFixSpec->fields.rareTryCount = 0;
 
+    Logger::log("Shiny roll rnd end\n");
     return rareRnd;
 }
 
@@ -52,8 +68,8 @@ HOOK_DEFINE_INLINE(Shiny_GetValue) {
 
 HOOK_DEFINE_INLINE(Shiny_GetRand) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
-        auto pFixSpec = (Pml::PokePara::InitialSpec::Object*)ctx->X[20];
-        auto rng = (Pml::Local::RandomGenerator::Object*)ctx->X[19];
+        auto pFixSpec = (Pml::PokePara::InitialSpec::Object*)ctx->X[19];
+        auto rng = (Pml::Local::RandomGenerator::Object*)ctx->X[20];
 
         ctx->X[0] = (uint64_t)ShinyRolls(pFixSpec, rng);
     }

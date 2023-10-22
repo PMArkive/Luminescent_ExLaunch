@@ -28,24 +28,28 @@ const int32_t SPEED_POWERID = 5;
 
 HOOK_DEFINE_REPLACE(LocalKoukan_GetIndex) {
     static int32_t Callback(int32_t npcindex, int32_t lang, MethodInfo *method) {
+        Logger::log("Local Koukan - Get Index\n");
         return npcindex;
     }
 };
 
 HOOK_DEFINE_REPLACE(LocalKoukan_GetTargetData) {
     static XLSXContent::LocalKoukanData::Sheetdata::Object * Callback(int32_t npcindex, int32_t lang, MethodInfo *method) {
+
+        GameData::DataManager::StaticFields *staticFields;
         system_load_typeinfo(0x5e91);
-        auto dataManagerTI = GameData::DataManager_TypeInfo();
-        GameData::DataManager::Object *dataManagerObj = (GameData::DataManager::Object *) dataManagerTI;
-        XLSXContent::LocalKoukanData::Sheetdata::Object *data = dataManagerObj->getClass()->static_fields->LocalKoukanData->get_Item(
-                npcindex);
+        GameData::DataManager::getClass()->initIfNeeded();
+        staticFields = (GameData::DataManager::StaticFields *)GameData::DataManager_TypeInfo()->static_fields;
+        XLSXContent::LocalKoukanData::Sheetdata::Object *data = staticFields->LocalKoukanData->get_Item(npcindex);
+        Logger::log("Get Target Data - Data from Item Success\n");
         return data;
     }
 };
 
-int32_t LocalKoukan_Language(int32_t langId, MethodInfo *method)
+int32_t LocalKoukan_Language(int32_t langId)
 {
     int32_t playerLangId = PlayerWork::get_msgLangID();
+    Logger::log("Local Koukan - Language\n");
 
     if (langId == 0)
     {
@@ -70,30 +74,34 @@ int32_t LocalKoukan_Language(int32_t langId, MethodInfo *method)
 }
 
 HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
-    static Pml::PokePara::PokemonParam::Object *
-    Callback(XLSXContent::LocalKoukanData::Sheetdata::Object *data, MethodInfo *method) {
-        system_load_typeinfo(0x5e90);
+    static Pml::PokePara::PokemonParam::Object * Callback(XLSXContent::LocalKoukanData::Sheetdata::Object *data) {
 
-        Pml::PokePara::InitialSpec::Object *initialSpec = (Pml::PokePara::InitialSpec::Object *) Pml::PokePara::InitialSpec_TypeInfo;
-        initialSpec->ctor();
+        system_load_typeinfo(0x5e90);
+        //Pml::PokePara::InitialSpec::getClass()->initIfNeeded();
+        auto initialSpec = Pml::PokePara::InitialSpec::newInstance();
+        //initialSpec->ctor();
 
         int32_t formNo = (data->fields.monsno & 0xFFFF0000) >> 16;  // Bits 16-31
         int32_t monsNo = data->fields.monsno & 0x0000FFFF;         // Bits 0-15
 
+        /*
         int32_t speedIV = (data->fields.tokusei & 0xF8000000) >> 27; // Bits 27-31
         int32_t spDefIV = (data->fields.tokusei & 0x07C00000) >> 22; // Bits 22-26
         int32_t spAtkIV = (data->fields.tokusei & 0x003E0000) >> 17; // Bits 17-21
         int32_t defIV = (data->fields.tokusei & 0x0001F000) >> 12; // Bits 12-16
         int32_t atkIV = (data->fields.tokusei & 0x00000F80) >> 7;  // Bits 7-11
         int32_t hpIV = (data->fields.tokusei & 0x0000007C) >> 2;  // Bits 2-6
+        moved to JSON
+        */
         int32_t tokusei = data->fields.tokusei & 0x00000003;        // Bits 0-1
 
-        int32_t ivFlag = (data->fields.seikaku & 0x00000800) >> 11; // Bit  11
+        //int32_t ivFlag = (data->fields.seikaku & 0x00000800) >> 11; // Bit  11
         int32_t contestFlag = (data->fields.seikaku & 0x00000400) >> 10; // Bit  10
         int32_t ballId = (data->fields.seikaku & 0x000003E0) >> 5;  // Bits 5-9
         int32_t seikaku = data->fields.seikaku & 0x0000001F;        // Bits 0-4
 
-        if (ballId == 0) ballId = POKEBALL_BALLID;
+        //if (ballId == 0) ballId = POKEBALL_BALLID;
+        //Move to JSON
 
         initialSpec->fields.monsno = monsNo;
         initialSpec->fields.formno = formNo;
@@ -106,6 +114,9 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
         initialSpec->fields.personalRnd = (uint64_t) data->fields.rand;
         initialSpec->fields.randomSeed = (uint64_t) data->fields.rand;
         initialSpec->fields.isRandomSeedEnable = true;
+
+        /*
+         * Moved to JSON
 
         if (ivFlag & 1) {
             if (initialSpec->fields.talentPower->max_length > HP_POWERID)
@@ -121,49 +132,84 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
             if (initialSpec->fields.talentPower->max_length > SPEED_POWERID)
                 initialSpec->fields.talentPower->m_Items[SPEED_POWERID] = (uint16_t) speedIV;
         }
+          */
 
-        Pml::PokePara::PokemonParam::Object *pokeParam = (Pml::PokePara::PokemonParam::Object *) Pml::PokePara::PokemonParam_TypeInfo;
-        pokeParam->ctor(initialSpec);
-        Pml::PokePara::CoreParam::Object *coreParam = (Pml::PokePara::CoreParam::Object *) pokeParam;
+        Logger::log("Local Koukan - Pokemon Param\n");
+        //Pml::PokePara::PokemonParam::getClass()->initIfNeeded();
+        //Logger::log("Poke param init if needed\n");
+        auto pokeParam = Pml::PokePara::PokemonParam::newInstance(initialSpec);
+        Logger::log("poke param new instance\n");
+        //pokeParam->ctor(initialSpec);
+        //Logger::log("Init spec .ctor works\n");
+        Pml::PokePara::CoreParam::Object * coreParam = (Pml::PokePara::CoreParam::Object *)pokeParam;
+        Logger::log("core param cast success\n");
 
-        Dpr::Message::MessageManager::Object *messageManager = (Dpr::Message::MessageManager::Object *) Dpr::Message::MessageManager::instance();
-        System::String::Object *nickname = messageManager->GetNameMessage(System::String::Create("dp_scenario3"), data->fields.nickname_label);
+        auto messageManager = Dpr::Message::MessageManager::instance();
+        Logger::log("message manager instance\n");
+        auto nickname = messageManager->GetNameMessage(System::String::Create("dp_scenario3"), data->fields.nickname_label);
+        Logger::log("Local Koukan - nickname var set\n");
         coreParam->SetNickName(nickname);
+        Logger::log("Local Koukan - set nickname\n");
 
         coreParam->SetItem(data->fields.itemno);
+        Logger::log("Local Koukan -  data set\n");
 
         System::String::Object *trainerName = messageManager->GetNameMessage(System::String::Create("dp_scenario3"), data->fields.name_label);
+        Logger::log("Local Koukan - trainer name retrieved\n");
         coreParam->SetParentName(trainerName);
+        Logger::log("Local Koukan - trainer name set\n");
 
-        uint32_t language = LocalKoukan_Language(data->fields.language, nullptr);
+        uint32_t language = LocalKoukan_Language(data->fields.language);
+        Logger::log("Local Koukan - language retrieved\n");
         coreParam->SetLangId(language);
+        Logger::log("Local Koukan - language ID set\n");
 
         coreParam->SetGetBall(ballId);
+        Logger::log("Local Koukan - ball ID set\n");
 
         if (contestFlag & 1) {
+            Logger::log("Local Koukan - contest flag set\n");
+            /*
             coreParam->SetCondition(0, 20);
             coreParam->SetCondition(1, 20);
             coreParam->SetCondition(2, 20);
             coreParam->SetCondition(3, 20);
             coreParam->SetCondition(4, 20);
+             Moved to JSON
+             */
+            Logger::log("Local Koukan - conditions set\n");
         }
 
         for (int32_t i = 0; i < data->fields.waza->max_length && i < 4; i++) {
             coreParam->SetWaza(i, data->fields.waza->m_Items[i]);
+            Logger::log("Local Koukan - waza set\n");
         }
 
-        Pml::PokePara::OwnerInfo::Object *ownerInfo = (Pml::PokePara::OwnerInfo::Object *) Pml::PokePara::OwnerInfo_TypeInfo;
-        ownerInfo->ctor(PlayerWork::get_playerStatus());
+        DPData::MYSTATUS::Object* playerStatus = PlayerWork::get_playerStatus();
+        Pml::PokePara::OwnerInfo::getClass()->initIfNeeded();
+        auto ownerInfo = Pml::PokePara::OwnerInfo::newInstance(playerStatus);
+        //Pml::PokePara::OwnerInfo::Object* ownerInfoConverted = (Pml::PokePara::OwnerInfo::Object*)(ownerInfo);
+        Logger::log("Local Koukan - owner info set\n");
+        //ownerInfo->ctor(playerStatus);
+        Logger::log("Local Koukan - get player status\n");
 
         coreParam->UpdateOwnerInfo(ownerInfo);
+        Logger::log("Local Koukan - update owner info\n");
         poketool::poke_memo::poketool_poke_memo::Object::ClearPlaceTime(coreParam, 0);
+        Logger::log("Local Koukan - clear place time\n");
         poketool::poke_memo::poketool_poke_memo::Object::SetPlaceTime(coreParam, 0x7531, 1);
+        Logger::log("Local Koukan - set place time\n");
         poketool::poke_memo::poketool_poke_memo::Object::SetGetLevel(coreParam);
+        Logger::log("Local Koukan - set get level\n");
         poketool::poke_memo::poketool_poke_memo::Object::SetVersion(coreParam);
+        Logger::log("Local Koukan - set version\n");
 
         bool isValid = coreParam->StartFastMode();
+        Logger::log("Local Koukan - start fast mode\n");
         coreParam->EndFastMode(isValid);
+        Logger::log("Local Koukan - end fast mode\n");
 
+        Logger::log("Local Koukan - Create Trade Poke Param - End\n");
         return pokeParam;
     }
 };
@@ -173,8 +219,10 @@ void exl_extended_local_trades_main() {
     LocalKoukan_GetTargetData::InstallAtOffset(0x01af32a0);
     LocalKoukan_CreateTradePokeParam::InstallAtOffset(0x01af3510);
 
+    /*
     using namespace exl::armv8::inst;
     using namespace exl::armv8::reg;
     exl::patch::CodePatcher p(0x01af368c);
-    p.BranchLinkInst((void*)&LocalKoukan_Language);
+    p.BranchInst((void*)&LocalKoukan_Language);
+    */
 }

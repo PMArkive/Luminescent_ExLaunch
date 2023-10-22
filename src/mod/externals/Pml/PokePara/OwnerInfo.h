@@ -6,7 +6,7 @@
 #include "externals/DPData/MYSTATUS.h"
 
 namespace Pml::PokePara {
-    struct OwnerInfo : ILClass<OwnerInfo> {
+    struct OwnerInfo : ILClass<OwnerInfo, 0x04c5fbe8> {
         struct Fields {
             uint32_t trainerId;
             uint8_t sex;

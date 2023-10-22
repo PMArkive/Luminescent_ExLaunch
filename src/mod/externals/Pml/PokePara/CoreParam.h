@@ -192,15 +192,15 @@ namespace Pml::PokePara {
         }
 
         inline bool UpdateOwnerInfo(Pml::PokePara::OwnerInfo::Object* ownerInfo) {
-            external<bool>(0x02048c90, this, ownerInfo);
+            return external<bool>(0x02048c90, this, ownerInfo);
         }
 
         inline bool StartFastMode() {
-            external<bool>(0x0204c910, this);
+            return external<bool>(0x0204c910, this);
         }
 
         inline bool EndFastMode(bool validFlag) {
-            external<bool>(0x0204c960, this, validFlag);
+            return external<bool>(0x0204c960, this, validFlag);
         }
     };
 }
