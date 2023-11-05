@@ -44,7 +44,6 @@ namespace FsHelper {
         long size = 0;
         nn::fs::GetFileSize(&size, handle);
         long alignedSize = ALIGN_UP(std::max(size, loadData.bufSize), loadData.alignment);
-        Logger::log("File Size: %ld, Aligned Size: %ld\n", size, alignedSize);
         loadData.buffer = IM_ALLOC(alignedSize);
         loadData.bufSize = alignedSize;
 
@@ -74,6 +73,30 @@ namespace FsHelper {
         nn::Result result = nn::fs::GetEntryType(&type, path);
 
         return result.isSuccess() && type == nn::fs::DirectoryEntryType_File;
+    }
 
+    nn::json loadJsonFileFromPath(const char *path) {
+        if (FsHelper::isFileExist(path))
+        {
+            long size = FsHelper::getFileSize(path);
+            FsHelper::LoadData data {
+                .path = path,
+                .alignment = 1,
+                .bufSize = size,
+            };
+            FsHelper::loadFileFromPath(data);
+
+            nn::string strBuffer((char*)data.buffer, data.bufSize);
+            nn::json j = nn::json::parse(strBuffer);
+
+            // Free buffer
+            IM_FREE(data.buffer);
+
+            return j;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 }

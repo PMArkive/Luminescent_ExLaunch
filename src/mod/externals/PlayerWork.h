@@ -283,7 +283,15 @@ struct PlayerWork : ILClass<PlayerWork, 0x04c59b58> {
         return external<bool>(0x02ce2cd0);
     }
 
-    static inline int32_t get_msgLangID() {
-        return external<int32_t>(0x02ce2c20);
+    static inline int32_t get_defaultPokeType() {
+        return external<int32_t>(0x02cf1320);
+    }
+
+    static inline int32_t get_rivalPokeType() {
+        return external<int32_t>(0x02cf1590);
+    }
+
+    static inline int32_t get_supportPokeType() {
+        return external<int32_t>(0x02cf1910);
     }
 };

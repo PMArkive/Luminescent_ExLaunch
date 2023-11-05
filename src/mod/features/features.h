@@ -7,6 +7,9 @@ void exl_features_main();
 // Applies some basic ability changes.
 void exl_ability_changes_main();
 
+// Allows starters to be changed via external JSON files.
+void exl_alt_starters_main();
+
 // Overrides calls to C#'s Enum.GetName on AreaID and ZoneID enums.
 void exl_area_zone_codes_main();
 
@@ -48,8 +51,8 @@ void exl_evolution_methods_main();
 // Adds functionality to the Exp. Share item.
 void exl_exp_share_main();
 
-// Extends local trading.
-void exl_extended_local_trades_main();
+// Redirects TM learnsets to external JSON files that contain more data.
+void exl_extended_tm_learnsets_main();
 
 // Adds new Pokémon/held item combos that trigger a form change when held.
 void exl_form_change_held_items_main();
@@ -66,6 +69,9 @@ void exl_items_changes_main();
 
 // Adds new key item functionality.
 void exl_key_items_main();
+
+// Allows configuring the available languages on the language select screen.
+void exl_language_select_main();
 
 // Adds the Level Cap functionality.
 void exl_level_cap_main();
@@ -95,6 +101,9 @@ void exl_relearn_tms_main();
 // Remaps the controls.
 void exl_remap_main();
 
+// Adds support for integration between the Infinite Repel and normal repels.
+void exl_repel_fix_main();
+
 // Applies patches to support the expansion of many things in the save data.
 void exl_save_data_expansion();
 
@@ -107,8 +116,14 @@ void exl_shiny_rates_main();
 // Adds support for Sigma Platinum-style Sound encounters.
 void exl_sounds_main();
 
+// Adds support for alternate forms for the field swarm models.
+void exl_swarm_forms_main();
+
 // Makes TMs infinite use.
 void exl_tms_main();
+
+// Allows alternate forms of Pokémon roaming in the Underground.
+void exl_ug_forms_main();
 
 // Adds support for wild Pokémon of any form number.
 void exl_wild_forms_main();

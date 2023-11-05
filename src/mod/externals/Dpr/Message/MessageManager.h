@@ -2,8 +2,8 @@
 
 #include "externals/il2cpp-api.h"
 
+#include "externals/Dpr/Message/MessageGlossaryParseDataModel.h"
 #include "externals/SmartPoint/AssetAssistant/SingletonMonoBehaviour.h"
-
 
 namespace Dpr::Message {
     struct MessageManager : ILClass<MessageManager> {
@@ -22,8 +22,8 @@ namespace Dpr::Message {
             return external<System::String::Object *>(0x0210d000, this, fileName, label);
         }
 
-        inline System::String::Object * GetNameMessage(System::String::Object *fileName,System::String::Object *label) {
-            return external<System::String::Object *>(0x0210ce50, this, fileName, label);
+        inline Dpr::Message::MessageGlossaryParseDataModel::Object* GetNameMessageDataModel(System::String::Object* fileName, int32_t labelIndex) {
+            return external<Dpr::Message::MessageGlossaryParseDataModel::Object*>(0x02109230, this, fileName, labelIndex);
         }
     };
 }
