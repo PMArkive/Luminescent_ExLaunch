@@ -294,4 +294,8 @@ struct PlayerWork : ILClass<PlayerWork, 0x04c59b58> {
     static inline int32_t get_supportPokeType() {
         return external<int32_t>(0x02cf1910);
     }
+
+    static inline int32_t get_msgLangID() {
+        return external<int32_t>(0x02ce2c20);
+    }
 };

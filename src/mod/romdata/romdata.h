@@ -8,6 +8,7 @@
 #include "romdata/data/Starter.h"
 #include "romdata/data/TMLearnset.h"
 #include "romdata/data/UnbreakablePokeItem.h"
+#include "romdata/data/ExtLocalTrades.h"
 
 // Returns the max level based on the given level cap index.
 uint32_t GetLevelCapLevel(uint32_t index);
@@ -53,3 +54,6 @@ bool IsLanguageActivated(int32_t langID);
 
 // Returns the available Color Variation presets in the intro.
 nn::vector<int32_t> GetIntroColorVariationPresets();
+
+// Returns ball ID number
+uint32_t GetBallTypeNo(int32_t index);

@@ -7,10 +7,10 @@
 #include "externals/Pml/PokePara/OwnerInfo.h"
 #include "externals/Pml/PokePara/PokemonParam.h"
 #include "externals/poketool/poke_memo/poketool_poke_memo.h"
-//#include "externals/SmartPoint/AssetAssistant/SingletonMonoBehaviour.h"
 #include "externals/XLSXContent/LocalKoukanData.h"
+#include "romdata/romdata.h"
 
-#include "utils/utils.h"
+//#include "utils/utils.h"
 #include "logger/logger.h"
 
 const int32_t JAPANESE_LANGID = 1;
@@ -84,24 +84,24 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
         int32_t formNo = (data->fields.monsno & 0xFFFF0000) >> 16;  // Bits 16-31
         int32_t monsNo = data->fields.monsno & 0x0000FFFF;         // Bits 0-15
 
-        /*
         int32_t speedIV = (data->fields.tokusei & 0xF8000000) >> 27; // Bits 27-31
         int32_t spDefIV = (data->fields.tokusei & 0x07C00000) >> 22; // Bits 22-26
         int32_t spAtkIV = (data->fields.tokusei & 0x003E0000) >> 17; // Bits 17-21
         int32_t defIV = (data->fields.tokusei & 0x0001F000) >> 12; // Bits 12-16
         int32_t atkIV = (data->fields.tokusei & 0x00000F80) >> 7;  // Bits 7-11
         int32_t hpIV = (data->fields.tokusei & 0x0000007C) >> 2;  // Bits 2-6
-        moved to JSON
-        */
+        //move to JSON
         int32_t tokusei = data->fields.tokusei & 0x00000003;        // Bits 0-1
 
-        //int32_t ivFlag = (data->fields.seikaku & 0x00000800) >> 11; // Bit  11
+        int32_t ivFlag = (data->fields.seikaku & 0x00000800) >> 11; // Bit  11
         int32_t contestFlag = (data->fields.seikaku & 0x00000400) >> 10; // Bit  10
         int32_t ballId = (data->fields.seikaku & 0x000003E0) >> 5;  // Bits 5-9
         int32_t seikaku = data->fields.seikaku & 0x0000001F;        // Bits 0-4
 
-        //if (ballId == 0) ballId = POKEBALL_BALLID;
-        //Move to JSON
+        if (ballId == 0) {
+            ballId = GetBallTypeNo(0);
+        }
+        //Moved to JSON
 
         initialSpec->fields.monsno = monsNo;
         initialSpec->fields.formno = formNo;
@@ -114,9 +114,7 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
         initialSpec->fields.personalRnd = (uint64_t) data->fields.rand;
         initialSpec->fields.randomSeed = (uint64_t) data->fields.rand;
         initialSpec->fields.isRandomSeedEnable = true;
-
-        /*
-         * Moved to JSON
+        //Move to JSON
 
         if (ivFlag & 1) {
             if (initialSpec->fields.talentPower->max_length > HP_POWERID)
@@ -132,7 +130,6 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
             if (initialSpec->fields.talentPower->max_length > SPEED_POWERID)
                 initialSpec->fields.talentPower->m_Items[SPEED_POWERID] = (uint16_t) speedIV;
         }
-          */
 
         Logger::log("Local Koukan - Pokemon Param\n");
         //Pml::PokePara::PokemonParam::getClass()->initIfNeeded();
@@ -169,14 +166,12 @@ HOOK_DEFINE_REPLACE(LocalKoukan_CreateTradePokeParam) {
 
         if (contestFlag & 1) {
             Logger::log("Local Koukan - contest flag set\n");
-            /*
             coreParam->SetCondition(0, 20);
             coreParam->SetCondition(1, 20);
             coreParam->SetCondition(2, 20);
             coreParam->SetCondition(3, 20);
             coreParam->SetCondition(4, 20);
-             Moved to JSON
-             */
+            //Move to JSON
             Logger::log("Local Koukan - conditions set\n");
         }
 
@@ -218,11 +213,4 @@ void exl_extended_local_trades_main() {
     LocalKoukan_GetIndex::InstallAtOffset(0x01af3390);
     LocalKoukan_GetTargetData::InstallAtOffset(0x01af32a0);
     LocalKoukan_CreateTradePokeParam::InstallAtOffset(0x01af3510);
-
-    /*
-    using namespace exl::armv8::inst;
-    using namespace exl::armv8::reg;
-    exl::patch::CodePatcher p(0x01af368c);
-    p.BranchInst((void*)&LocalKoukan_Language);
-    */
 }

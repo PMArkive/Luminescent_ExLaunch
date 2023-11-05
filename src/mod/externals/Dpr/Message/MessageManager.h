@@ -25,6 +25,10 @@ namespace Dpr::Message {
         inline Dpr::Message::MessageGlossaryParseDataModel::Object* GetNameMessageDataModel(System::String::Object* fileName, int32_t labelIndex) {
             return external<Dpr::Message::MessageGlossaryParseDataModel::Object*>(0x02109230, this, fileName, labelIndex);
         }
+
+        inline System::String::Object * GetNameMessage(System::String::Object *fileName,System::String::Object *label) {
+            return external<System::String::Object *>(0x0210ce50, this, fileName, label);
+        }
     };
 }
 
